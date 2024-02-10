@@ -4,9 +4,10 @@ import path from "path";
 
 import { getArgs } from "./default/getArgs.js";
 import { CLI_color } from "./default/colors.js";
-import { welcomeMessage, goodByeMessage, invalidInput, currentPath } from "./default/messages.js";
+import { welcomeMessage, goodByeMessage, invalidInput, currentPath, operationFailed } from "./default/messages.js";
 import { checkDir, readDir } from "./fs/fs.js";
 import { read } from "./fs/read.js";
+import { create } from "./fs/create.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -79,6 +80,11 @@ const lineHandle = async (line) => {
       }
       break;
     case "add":
+      const addPath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      await create(addPath).catch((err) => {
+        operationFailed();
+        console.log(CLI_color.red("Creating file error: "), err.message);
+      });
       break;
     case "rn":
       break;

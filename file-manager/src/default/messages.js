@@ -26,3 +26,7 @@ export const invalidInput = () => {
     CLI_color.red(      '       Try again or use "help" to see the list of available commands'    )
   );
 };
+
+export const operationFailed = () => {
+  console.log("    " + CLI_color.bg_red("Operation failed!") + "\n");
+};
