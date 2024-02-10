@@ -17,6 +17,7 @@ import { create } from "./fs/create.js";
 import { rename } from "./fs/rename.js";
 import { copy } from "./fs/copy.js";
 import { remove } from "./fs/delete.js";
+import { system } from "./os/os.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -153,6 +154,7 @@ const lineHandle = async (line) => {
       });
       break;
     case "os":
+      system(operationArr[1]);
       break;
     case "hash":
       break;
