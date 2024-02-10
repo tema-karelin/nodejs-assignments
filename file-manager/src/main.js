@@ -9,6 +9,7 @@ import { checkDir, readDir } from "./fs/fs.js";
 import { read } from "./fs/read.js";
 import { create } from "./fs/create.js";
 import { rename } from "./fs/rename.js";
+import { copy } from "./fs/copy.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -96,6 +97,12 @@ const lineHandle = async (line) => {
       })
       break;
     case "cp":
+      const cpInitialPath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      const cpSourcePath = path.normalize(path.join(currentDirectory, operationArr[2]));
+      await copy(cpInitialPath, cpSourcePath).catch((err) => {
+        operationFailed();
+        console.log(CLI_color.red("Copeing file error: "), err.message);
+      });
       break;
     case "mv":
       break;

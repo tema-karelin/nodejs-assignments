@@ -1,17 +1,18 @@
-import { cp } from "node:fs/promises";
-import path from "node:path";
-import { fileURLToPath } from "url";
+import { createReadStream, createWriteStream  } from "node:fs";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const folder2Copy = path.join(__dirname, ".", "files");
-const copyDest = path.join(__dirname, ".", "files_copy");
+export const copy = async (pathFrom, pathTo) => {
+  return new Promise((resolve, reject) => {
+    const writeStream = createWriteStream(pathTo, {encoding: 'utf-8', flags: 'wx'});
+    const readStream = createReadStream(pathFrom);
 
-const copy = async () => {
-  cp(folder2Copy, copyDest, {
-    recursive: true,
-    force: false,
-    errorOnExist: true,
-  }).catch(() => console.log(new Error("FS operation failed")));
+    readStream.pipe(writeStream);
+
+    writeStream.on('close', () => resolve());
+
+    writeStream.on('error', (err) => reject(err));
+    readStream.on('error', (err) => reject(err));
+  })
+
 };
 
-await copy();
+
