@@ -8,6 +8,7 @@ import { welcomeMessage, goodByeMessage, invalidInput, currentPath, operationFai
 import { checkDir, readDir } from "./fs/fs.js";
 import { read } from "./fs/read.js";
 import { create } from "./fs/create.js";
+import { rename } from "./fs/rename.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -87,6 +88,12 @@ const lineHandle = async (line) => {
       });
       break;
     case "rn":
+      const filePath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      const newFilePath = path.normalize(path.join(currentDirectory, operationArr[2]));
+      await rename(filePath, newFilePath).catch((err) => {
+        operationFailed();
+        console.log(CLI_color.red("Renaming file error: "), err.message);
+      })
       break;
     case "cp":
       break;
