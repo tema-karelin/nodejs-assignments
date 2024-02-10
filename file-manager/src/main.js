@@ -6,6 +6,7 @@ import { getArgs } from "./default/getArgs.js";
 import { CLI_color } from "./default/colors.js";
 import { welcomeMessage, goodByeMessage, invalidInput, currentPath } from "./default/messages.js";
 import { checkDir, readDir } from "./fs/fs.js";
+import { read } from "./fs/read.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -44,6 +45,7 @@ const lineHandle = async (line) => {
       }
       break;
     case "cd":
+      //! absolute or relative path
       if (!operationArr[1]) {
         invalidInput()
         break;
@@ -59,10 +61,22 @@ const lineHandle = async (line) => {
         })
       break;
     case "ls":
+      //! absolute or relative path
       const lsPath = operationArr[1] ? path.join(currentDirectory, operationArr[1]) : currentDirectory;
       await readDir(lsPath);
       break;
     case "cat":
+      if (!operationArr[1]) {
+        invalidInput()
+        break;
+      }
+      const catPath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      try {
+        await read(catPath);
+        console.log('end');
+      } catch (error) {
+        //! error message
+      }
       break;
     case "add":
       break;
