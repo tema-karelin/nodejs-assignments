@@ -19,14 +19,14 @@ export const currentPath = (currentDirectory) => {
 };
 
 export const invalidInput = () => {
-  console.log(
-    "    " +
-    CLI_color.bg_red("Invalid input!") +
-    "\n" +
-    CLI_color.red(      '       Try again or use "help" to see the list of available commands'    )
-  );
+  console.log("    " + CLI_color.bg_red("Invalid input!") + "\n" + CLI_color.red('       Try again or use "help" to see the list of available commands'));
 };
 
 export const operationFailed = () => {
-  console.log("    " + CLI_color.bg_red("Operation failed!") + "\n");
+  console.log("    " + CLI_color.bg_red("Operation failed!"));
 };
+
+export const helpMessage = () => {
+  
+
+}

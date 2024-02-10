@@ -18,6 +18,8 @@ import { rename } from "./fs/rename.js";
 import { copy } from "./fs/copy.js";
 import { remove } from "./fs/delete.js";
 import { system } from "./os/os.js";
+import { hash } from "./hash/hash.js";
+import { compress, decompress } from "./compress/compress.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -43,6 +45,9 @@ const exitHandle = () => {
 const lineHandle = async (line) => {
   const operationArr = line.trim().split(" ");
 
+  const filePath = path.normalize(path.join(currentDirectory, operationArr[1]));
+  const destPath = path.normalize(path.join(currentDirectory, operationArr[2]));
+
   switch (operationArr[0]) {
     case ".exit":
       exitHandle();
@@ -61,10 +66,9 @@ const lineHandle = async (line) => {
         invalidInput();
         break;
       }
-      const newPath = path.join(currentDirectory, operationArr[1]);
-      await checkDir(newPath).then((isDir) => {
+      await checkDir(filePath).then((isDir) => {
         if (isDir) {
-          currentDirectory = newPath;
+          currentDirectory = filePath;
         } else {
           invalidInput();
         }
@@ -72,9 +76,7 @@ const lineHandle = async (line) => {
       break;
     case "ls":
       //! absolute or relative path
-      const lsPath = operationArr[1]
-        ? path.join(currentDirectory, operationArr[1])
-        : currentDirectory;
+      const lsPath = operationArr[1] ? filePath : currentDirectory;
       await readDir(lsPath);
       break;
     case "cat":
@@ -82,57 +84,28 @@ const lineHandle = async (line) => {
         invalidInput();
         break;
       }
-      const catPath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      try {
-        await read(catPath);
-        console.log("end");
-      } catch (error) {
-        //! error message
-      }
+      await read(filePath);
       break;
     case "add":
-      const addPath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      await create(addPath).catch((err) => {
+      await create(filePath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Creating file error: "), err.message);
       });
       break;
     case "rn":
-      const filePath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      const newFilePath = path.normalize(
-        path.join(currentDirectory, operationArr[2])
-      );
-      await rename(filePath, newFilePath).catch((err) => {
+      await rename(filePath, destPath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Renaming file error: "), err.message);
       });
       break;
     case "cp":
-      const cpInitialPath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      const cpSourcePath = path.normalize(
-        path.join(currentDirectory, operationArr[2])
-      );
-      await copy(cpInitialPath, cpSourcePath).catch((err) => {
+      await copy(filePath, destPath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Copeing file error: "), err.message);
       });
       break;
     case "mv":
-      const mvInitialPath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      const mvSourcePath = path.normalize(
-        path.join(currentDirectory, operationArr[2])
-      );
-      await copy(mvInitialPath, mvSourcePath)
+      await copy(filePath, destPath)
         .then(() => {
           remove(mvInitialPath).catch((err) => {
             operationFailed();
@@ -145,10 +118,7 @@ const lineHandle = async (line) => {
         });
       break;
     case "rm":
-      const rmPath = path.normalize(
-        path.join(currentDirectory, operationArr[1])
-      );
-      await remove(rmPath).catch((err) => {
+      await remove(filePath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Removing file error: "), err.message);
       });
@@ -157,13 +127,20 @@ const lineHandle = async (line) => {
       system(operationArr[1]);
       break;
     case "hash":
+      await hash(filePath).catch((err) => {
+        operationFailed();
+        console.log(CLI_color.red("    Hashing file error: "), err.message);
+      });
       break;
     case "compress":
+      //! error handling
+      await compress(filePath, destPath);
       break;
     case "decompress":
+      //! error handling
+      await decompress(filePath, destPath);
       break;
     case "help":
-      // console.log()
       break;
 
     default:
