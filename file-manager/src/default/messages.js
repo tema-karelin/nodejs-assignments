@@ -15,7 +15,7 @@ export const goodByeMessage = (user) => {
 };
 
 export const currentPath = (currentDirectory) => {
-  console.log("    You are currently in", CLI_color.blue(currentDirectory));
+  console.log("       You are currently in", CLI_color.blue(currentDirectory));
 };
 
 export const invalidInput = () => {
@@ -23,6 +23,6 @@ export const invalidInput = () => {
     "    " +
     CLI_color.bg_red("Invalid input!") +
     "\n" +
-    CLI_color.red(      '    Try again or use "help" to see the list of available commands'    )
+    CLI_color.red(      '       Try again or use "help" to see the list of available commands'    )
   );
 };

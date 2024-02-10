@@ -28,7 +28,7 @@ const exitHandle = () => {
   goodByeMessage(user);
   process.exit(0);
 };
-const lineHandle = (line) => {
+const lineHandle = async (line) => {
   const operationArr = line.trim().split(" ");
 
   switch (operationArr[0]) {
@@ -42,7 +42,6 @@ const lineHandle = (line) => {
       } else {
         currentDirectory = pathArr[0] + path.sep;
       }
-      currentPath(currentDirectory);
       break;
     case "cd":
       if (!operationArr[1]) {
@@ -50,23 +49,18 @@ const lineHandle = (line) => {
         break;
       }
       const newPath = path.join(currentDirectory, operationArr[1]);
-      checkDir(newPath)
+      await checkDir(newPath)
         .then((isDir) => {
           if (isDir) {
             currentDirectory = newPath;
           } else {
             invalidInput();
           }
-          currentPath(currentDirectory);
         })
       break;
     case "ls":
-      if (!operationArr[1]) {
-        invalidInput()
-        break;
-      }
-      const lsPath = path.join(currentDirectory, operationArr[1]);
-      readDir(lsPath);
+      const lsPath = operationArr[1] ? path.join(currentDirectory, operationArr[1]) : currentDirectory;
+      await readDir(lsPath);
       break;
     case "cat":
       break;
@@ -96,6 +90,7 @@ const lineHandle = (line) => {
       invalidInput();
       break;
   }
+  currentPath(currentDirectory);
 };
 
 
