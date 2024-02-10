@@ -4,12 +4,19 @@ import path from "path";
 
 import { getArgs } from "./default/getArgs.js";
 import { CLI_color } from "./default/colors.js";
-import { welcomeMessage, goodByeMessage, invalidInput, currentPath, operationFailed } from "./default/messages.js";
+import {
+  welcomeMessage,
+  goodByeMessage,
+  invalidInput,
+  currentPath,
+  operationFailed,
+} from "./default/messages.js";
 import { checkDir, readDir } from "./fs/fs.js";
 import { read } from "./fs/read.js";
 import { create } from "./fs/create.js";
 import { rename } from "./fs/rename.js";
 import { copy } from "./fs/copy.js";
+import { remove } from "./fs/delete.js";
 
 const user = getArgs("username");
 // const welcomeMessage = CLI_color.green(
@@ -42,7 +49,7 @@ const lineHandle = async (line) => {
     case "up":
       const pathArr = currentDirectory.split(path.sep);
       if (pathArr.length > 2) {
-        currentDirectory = path.join(... pathArr.slice(0, - 1));
+        currentDirectory = path.join(...pathArr.slice(0, -1));
       } else {
         currentDirectory = pathArr[0] + path.sep;
       }
@@ -50,63 +57,100 @@ const lineHandle = async (line) => {
     case "cd":
       //! absolute or relative path
       if (!operationArr[1]) {
-        invalidInput()
+        invalidInput();
         break;
       }
       const newPath = path.join(currentDirectory, operationArr[1]);
-      await checkDir(newPath)
-        .then((isDir) => {
-          if (isDir) {
-            currentDirectory = newPath;
-          } else {
-            invalidInput();
-          }
-        })
+      await checkDir(newPath).then((isDir) => {
+        if (isDir) {
+          currentDirectory = newPath;
+        } else {
+          invalidInput();
+        }
+      });
       break;
     case "ls":
       //! absolute or relative path
-      const lsPath = operationArr[1] ? path.join(currentDirectory, operationArr[1]) : currentDirectory;
+      const lsPath = operationArr[1]
+        ? path.join(currentDirectory, operationArr[1])
+        : currentDirectory;
       await readDir(lsPath);
       break;
     case "cat":
       if (!operationArr[1]) {
-        invalidInput()
+        invalidInput();
         break;
       }
-      const catPath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      const catPath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
       try {
         await read(catPath);
-        console.log('end');
+        console.log("end");
       } catch (error) {
         //! error message
       }
       break;
     case "add":
-      const addPath = path.normalize(path.join(currentDirectory, operationArr[1]));
+      const addPath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
       await create(addPath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Creating file error: "), err.message);
       });
       break;
     case "rn":
-      const filePath = path.normalize(path.join(currentDirectory, operationArr[1]));
-      const newFilePath = path.normalize(path.join(currentDirectory, operationArr[2]));
+      const filePath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
+      const newFilePath = path.normalize(
+        path.join(currentDirectory, operationArr[2])
+      );
       await rename(filePath, newFilePath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Renaming file error: "), err.message);
-      })
+      });
       break;
     case "cp":
-      const cpInitialPath = path.normalize(path.join(currentDirectory, operationArr[1]));
-      const cpSourcePath = path.normalize(path.join(currentDirectory, operationArr[2]));
+      const cpInitialPath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
+      const cpSourcePath = path.normalize(
+        path.join(currentDirectory, operationArr[2])
+      );
       await copy(cpInitialPath, cpSourcePath).catch((err) => {
         operationFailed();
         console.log(CLI_color.red("Copeing file error: "), err.message);
       });
       break;
     case "mv":
+      const mvInitialPath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
+      const mvSourcePath = path.normalize(
+        path.join(currentDirectory, operationArr[2])
+      );
+      await copy(mvInitialPath, mvSourcePath)
+        .then(() => {
+          remove(mvInitialPath).catch((err) => {
+            operationFailed();
+            console.log(CLI_color.red("Removing file error: "), err.message);
+          });
+        })
+        .catch((err) => {
+          operationFailed();
+          console.log(CLI_color.red("Copeing file error: "), err.message);
+        });
       break;
     case "rm":
+      const rmPath = path.normalize(
+        path.join(currentDirectory, operationArr[1])
+      );
+      await remove(rmPath).catch((err) => {
+        operationFailed();
+        console.log(CLI_color.red("Removing file error: "), err.message);
+      });
       break;
     case "os":
       break;
@@ -114,19 +158,18 @@ const lineHandle = async (line) => {
       break;
     case "compress":
       break;
-    case 'decompress':
+    case "decompress":
       break;
-    case 'help':
+    case "help":
       // console.log()
       break;
-    
+
     default:
       invalidInput();
       break;
   }
   currentPath(currentDirectory);
 };
-
 
 welcomeMessage(user);
 currentPath(currentDirectory);
