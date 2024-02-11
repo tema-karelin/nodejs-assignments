@@ -3,17 +3,14 @@ import * as readline from "readline/promises";
 import path from "path";
 
 import { getArgs } from "./default/getArgs.js";
-import { CLI_color } from "./default/colors.js";
 import {
   welcomeMessage,
   goodByeMessage,
   invalidInput,
   currentPath,
-  operationFailed,
+  helpMessage
 } from "./default/messages.js";
-import { cd, checkDir, readDir, up, read, create, rename, copy, remove, move } from "./fs/fs.js";
-// import { copy } from "./fs/copy.js";
-// import { remove } from "./fs/delete.js";
+import { cd, readDir, up, read, create, rename, copy, remove, move } from "./fs/fs.js";
 import { system } from "./os/os.js";
 import { hash } from "./hash/hash.js";
 import { compress, decompress } from "./compress/compress.js";
@@ -79,10 +76,6 @@ const lineHandle = async (line) => {
 
     case "cp":
       await copy(filePath, destPath);
-      // .catch((err) => {
-      //   operationFailed();
-      //   console.log(CLI_color.red("Copeing file error: "), err.message);
-      // });
       break;
 
     case "mv":
@@ -91,10 +84,6 @@ const lineHandle = async (line) => {
 
     case "rm":
       await remove(filePath);
-      // .catch((err) => {
-      //   operationFailed();
-      //   console.log(CLI_color.red("Removing file error: "), err.message);
-      // });
       break;
 
     case "os":
@@ -102,23 +91,19 @@ const lineHandle = async (line) => {
       break;
 
     case "hash":
-      await hash(filePath).catch((err) => {
-        operationFailed();
-        console.log(CLI_color.red("    Hashing file error: "), err.message);
-      });
+      await hash(filePath);
       break;
 
     case "compress":
-      //! error handling
       await compress(filePath, destPath);
       break;
 
     case "decompress":
-      //! error handling
       await decompress(filePath, destPath);
       break;
 
     case "help":
+      helpMessage();
       break;
 
     default:

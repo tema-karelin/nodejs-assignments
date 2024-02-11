@@ -2,9 +2,14 @@ import { createHash } from "crypto";
 import { createReadStream } from "fs";
 
 import { CLI_color } from "../default/colors.js";
+import { inputErrorMessage, operErrorMessage } from "../default/messages.js";
 
 export const hash = async (filePath) => {
-  return new Promise((resolve, reject) => {
+  if (!filePath) {
+    inputErrorMessage('ERROR: Argument required');
+    return
+  }
+  const promise =  new Promise((resolve, reject) => {
     const hash = createHash("sha256");
     const readStream = createReadStream(filePath, "utf-8");
 
@@ -23,5 +28,8 @@ export const hash = async (filePath) => {
       resolve();
     });
     readStream.on("error", (err) => reject(err));
+  });
+  await promise.catch((err) => {
+    operErrorMessage(err.message);
   });
 };

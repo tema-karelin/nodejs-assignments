@@ -27,8 +27,7 @@ export const operationFailed = () => {
 };
 
 export const helpMessage = () => {
-  
-
+  console.log(CLI_color.cyan('    Check all functionality on ') + CLI_color.yellow(' https://github.com/AlreadyBored/nodejs-assignments/blob/main/assignments/file-manager/assignment.md'));
 }
 
 export const inputErrorMessage = (msg) => {
