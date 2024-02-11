@@ -61,7 +61,7 @@ export const cd = async (dirPath, current) => {
       if (isDir) {
         return dirPath;
       } else {
-        inputErrorMessagee("Path you typed is not directory");
+        inputErrorMessage("Path you typed is not directory");
         return current;
       }
     })
@@ -141,8 +141,24 @@ export const copy = async (pathFrom, pathTo) => {
     inputErrorMessage("ERROR: Arguments required");
     return;
   }
+  let destPath;
+  await checkDir(pathTo)
+    .then((isDir) => {
+      if (isDir) {
+        destPath = path.join(pathTo, path.basename(pathFrom));
+      } else {
+        destPath = pathTo;
+      }
+    })
+    .catch((err) => {
+      if (err.code === 'ENOENT') {
+        destPath = pathTo;
+      } else {
+        operErrorMessage(err.message);
+      }
+    });
   const cp = new Promise((resolve, reject) => {
-    const writeStream = createWriteStream(pathTo, {
+    const writeStream = createWriteStream(destPath, {
       encoding: "utf-8",
       flags: "wx",
     });
@@ -156,7 +172,7 @@ export const copy = async (pathFrom, pathTo) => {
     readStream.on("error", (err) => reject(err));
   });
   await cp.catch((err) => {
-    operErrorMessage(err.message);
+    operErrorMessage('cp: ' + err.message);
   });
 };
 
