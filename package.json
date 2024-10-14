@@ -1,11 +1,13 @@
 {
-  "name": "nodejs-assignments",
+  "name": "file-manager",
   "version": "1.0.0",
-  "description": "This repository is the repository for nodejs-assignments tasks in RSSchool",
-  "main": "index.js",
+  "description": "This repository is the part of nodejs-assignments",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "type": "module",
   "scripts": {
-    "start": "node ./file-manager/src/main.js"
+    "start": "node ./src/main.js"
   },
   "author": "tema-karelin",
   "license": "ISC"
