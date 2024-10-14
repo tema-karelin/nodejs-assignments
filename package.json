@@ -1,11 +1,14 @@
 {
-  "name": "nodejs-assignments",
+  "name": "file-manager",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "This repository is the part of nodejs-assignments",
+  "engines": {
+    "node": ">=20.0.0"
   },
-  "author": "",
+  "type": "module",
+  "scripts": {
+    "start": "node ./src/main.js"
+  },
+  "author": "tema-karelin",
   "license": "ISC"
 }
